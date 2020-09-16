@@ -174,6 +174,17 @@ def data_out(df, df_flags):
     df_0LIA01_1LIA05.drop(col_drop, axis=1, inplace=True)
     return df_0LIA01_1LIA05
 
+def read_path(input_all_paths, denomination):
+    df = pd.read_excel(input_all_paths, sheet_name="inputs")
+    return df[df.denomination==denomination].path.iloc[0]
+
+def check_subconso(string):
+    subconso_flag = ["2ELI10", "1IFRS002"]
+    if string in subconso_flag:
+        return "Subconsolidated"
+    else:
+        return "Consolidated"
+
 # def pipeline_conso(path_adaptive_out, path_adaptive_mje, path_flags, path_flags):
 
 #     #creation of dataframes
