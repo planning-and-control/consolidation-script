@@ -2,6 +2,7 @@ import pandas as pd
 from functions import *
 from variables import *
 import os
+from playsound import playsound
 
 path_adaptive_out = read_path(input_all_paths, "path_adaptive_out")
 path_adaptive_mje = read_path(input_all_paths, "path_adaptive_mje")
@@ -10,7 +11,7 @@ path_levels = read_path(input_all_paths, "path_levels")
 output_path = "../output/"
 
 print("Constructing dataframes...")
-df_adaptive_0 = pd.read_csv(path_adaptive_out, delimiter=";", encoding="cp1252", parse_dates=["dataPeriod"])
+df_adaptive_0 = pd.read_csv(path_adaptive_out, delimiter=";", encoding="cp1252", parse_dates=["dataPeriod"], dtype=dict(zip(["CompanyCode", "FlowAccount", "BSSourceAccount"], 3*["str"])))
 df_mje = pd.read_csv(path_adaptive_mje, delimiter=";", encoding="cp1252", parse_dates=["dataPeriod"])
 
 
@@ -20,8 +21,11 @@ df_partner_flag = pd.read_excel(path_flags, sheet_name="Sheet1")
 print("Generating 0LIA01...")
 df_0LIA01 = transform_adaptive_out(df_adaptive_0, "2020-04-01", "0LIA01")
 df_levels = pd.read_excel(path_levels, sheet_name="Accounts", skiprows=3, dtype={"Lavel Name": "str"})
+print(df_0LIA01.shape)
 df_0LIA01 = df_0LIA01.merge(df_levels[["Lavel Name", "Platform_Cube"]], how="left", left_on="LevelName", right_on="Lavel Name")
-df_0LIA01 = df_0LIA01.merge(df_levels[["Company", "Platform_Cube"]], how="left", left_on="Partner", right_on="Company")
+print(df_0LIA01.shape)
+df_0LIA01 = df_0LIA01.merge(df_levels[["Company", "Platform_Cube"]].drop_duplicates(subset=['Company']).reset_index(), how="left", left_on="Partner", right_on="Company")
+print(df_0LIA01.shape)
 df_0LIA01.rename(columns={"Platform_Cube_x": "Scope", "Platform_Cube_y": "Scope_T1"}, inplace=True)
 df_0LIA01.drop(["Lavel Name", "Company"], axis=1, inplace=True)
 
@@ -84,3 +88,4 @@ grouping_cols = ['dataPeriod', 'LevelName', 'AccountCode', 'CostCentre', 'Partne
 
 df_final = df_final.groupby(grouping_cols, as_index=False).sum()
 df_final.to_csv(os.path.join(output_path, "BP2025_F00_fromFxx.csv"))
+playsound("../input/bell_sound.wav")

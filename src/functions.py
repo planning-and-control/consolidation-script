@@ -25,7 +25,7 @@ def transform_adaptive_out(df, date, D_AU):
     #drop rows where LevelName is Blue Canyon I Company
     index_drop = df[df.LevelName == "Blue Canyon I Company"].index
     df = df.drop(index_drop)
-
+    
     #add D_AU column
     df["D_AU"] = D_AU
 
