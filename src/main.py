@@ -8,7 +8,8 @@ path_adaptive_out = read_path(input_all_paths, "path_adaptive_out")
 path_adaptive_mje = read_path(input_all_paths, "path_adaptive_mje")
 path_flags = read_path(input_all_paths, "path_flags")
 path_levels = read_path(input_all_paths, "path_levels")
-output_path = "../output/"
+output_path = read_path(input_all_paths, "output_path")
+print(output_path)
 
 print("Constructing dataframes...")
 df_adaptive_0 = pd.read_csv(path_adaptive_out, delimiter=";", encoding="cp1252", parse_dates=["dataPeriod"], dtype=dict(zip(["CompanyCode", "FlowAccount", "BSSourceAccount"], 3*["str"])))
@@ -28,31 +29,39 @@ df_0LIA01 = df_0LIA01.merge(df_levels[["Company", "Platform_Cube"]].drop_duplica
 print(df_0LIA01.shape)
 df_0LIA01.rename(columns={"Platform_Cube_x": "Scope", "Platform_Cube_y": "Scope_T1"}, inplace=True)
 df_0LIA01.drop(["Lavel Name", "Company"], axis=1, inplace=True)
-
-df_0LIA01.to_csv(os.path.join(output_path, "BP2025_0LIA01.csv"))
+filename="BP2025_0LIA01.csv"
+delete_and_save(df_0LIA01, output_path, filename)
 
 print("Generating 1LIA05...")
 df_1LIA05 = equity_out(df_0LIA01, df_flags, "1LIA05")
-df_1LIA05.to_csv(os.path.join(output_path, "BP2025_1LIA05.csv"))
+print(os.path.join(output_path, "BP2025_0LIA01.csv"))
+print(os.path.join(output_path, "BP2025_1LIA05.csv"))
+filename="BP2025_1LIA05.csv"
+delete_and_save(df_1LIA05, output_path, filename)
 
 print("Generating 0LIA01_1LIA05...")
 df_0LIA01_1LIA05 = data_out(df_0LIA01, df_flags)
-df_0LIA01_1LIA05.to_csv(os.path.join(output_path, "BP2025_0LIA01_1LIA05.csv"))
+filename="BP2025_0LIA01_1LIA05.csv"
+delete_and_save(df_0LIA01_1LIA05, output_path, filename)
 
 print("Generating 2ELI10...")
 df_2ELI10 = partnerEquityOut(df_0LIA01_1LIA05, df_partner_flag, "2ELI10")
-df_2ELI10.to_csv(os.path.join(output_path, "BP2025_2ELI10.csv"))
+filename="BP2025_2ELI10.csv"
+delete_and_save(df_2ELI10, output_path, filename)
 
 print("Generating 1IFRS000...")
 df_1IFRS000 = transform_adaptive_out(df_mje, "2020-04-01", "1IFRS000")
-df_1IFRS000.to_csv(os.path.join(output_path, "BP2025_1IFRS000.csv"))
+filename="BP2025_1IFRS000.csv"
+delete_and_save(df_1IFRS000, output_path, filename)
 
 df_1IFRS001 = equity_out(df_1IFRS000, df_flags, "1IFRS001")
-df_1IFRS001.to_csv(os.path.join(output_path, "BP2025_1IFRS001.csv"))
+filename="BP2025_1IFRS001.csv"
+delete_and_save(df_1IFRS001, output_path, filename)
 
 print("Generating 1IFRS002...")
 df_1IFRS002 = partnerEquityOut(df_1IFRS000, df_partner_flag, "1IFRS002")
-df_1IFRS002.to_csv(os.path.join(output_path, "BP2025_1IFRS002.csv"))
+filename="BP2025_1IFRS002.csv"
+delete_and_save(df_1IFRS002, output_path, filename)
 
 df_final = pd.concat([df_0LIA01_1LIA05, df_2ELI10, df_1IFRS000, df_1IFRS001, df_1IFRS002])
 
@@ -66,8 +75,8 @@ index_drop = df_final[df_final.dataPeriod.dt.year == 2025].index
 df_final = df_final.drop(index_drop)
 df_final.reset_index(drop=True, inplace=True)
 
-
-df_final.to_csv(os.path.join(output_path, "BP2025_F00_fromFxx_prev.csv"))
+filename="BP2025_F00_fromFxx_prev.csv"
+delete_and_save(df_final, output_path, filename)
 
 time_increase = pd.Timedelta(days=365)
 df_final.dataPeriod += time_increase
@@ -87,5 +96,7 @@ grouping_cols = ['dataPeriod', 'LevelName', 'AccountCode', 'CostCentre', 'Partne
        'D_SC', 'D_AU', 'Period_Level', 'Period_Partner', 'Subconsolidated']
 
 df_final = df_final.groupby(grouping_cols, as_index=False).sum()
-df_final.to_csv(os.path.join(output_path, "BP2025_F00_fromFxx.csv"))
+filename="BP2025_F00_fromFxx.csv"
+delete_and_save(df_final, output_path, filename)
+
 playsound("../input/bell_sound.wav")

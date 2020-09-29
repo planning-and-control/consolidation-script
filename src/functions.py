@@ -5,6 +5,12 @@ import datetime
 from dateutil.relativedelta import relativedelta
 from variables import *
 
+def delete_and_save(df, output_path, filename):
+    final_path = os.path.join(output_path, filename)
+    if os.path.exists(final_path):
+        os.remove(final_path)
+    else:
+        df.to_csv(final_path)
 
 def transform_adaptive_out(df, date, D_AU):
     
