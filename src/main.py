@@ -21,15 +21,19 @@ df_partner_flag = pd.read_excel(path_flags, sheet_name="Sheet1")
 
 print("Generating 0LIA01...")
 df_0LIA01 = transform_adaptive_out(df_adaptive_0, "2020-04-01", "0LIA01")
+
 df_levels = pd.read_excel(path_levels, sheet_name="Accounts", skiprows=3, dtype={"Lavel Name": "str"})
 print(df_0LIA01.shape)
 df_0LIA01 = df_0LIA01.merge(df_levels[["Lavel Name", "Platform_Cube"]], how="left", left_on="LevelName", right_on="Lavel Name")
+
 print(df_0LIA01.shape)
-df_0LIA01 = df_0LIA01.merge(df_levels[["Company", "Platform_Cube"]].drop_duplicates(subset=['Company']).reset_index(), how="left", left_on="Partner", right_on="Company")
+df_0LIA01 = df_0LIA01.merge(df_levels[["Company", "Platform_Cube"]].drop_duplicates(subset=['Company']).reset_index(drop=True), how="left", left_on="Partner", right_on="Company")
+print(df_0LIA01.columns)
 print(df_0LIA01.shape)
 df_0LIA01.rename(columns={"Platform_Cube_x": "Scope", "Platform_Cube_y": "Scope_T1"}, inplace=True)
 df_0LIA01.drop(["Lavel Name", "Company"], axis=1, inplace=True)
 filename="BP2025_0LIA01.csv"
+breakpoint()
 delete_and_save(df_0LIA01, output_path, filename)
 
 print("Generating 1LIA05...")
