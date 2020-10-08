@@ -13,7 +13,7 @@ print(output_path)
 
 print("Constructing dataframes...")
 df_adaptive_0 = pd.read_csv(path_adaptive_out, parse_dates=["dataPeriod"], dtype=dict(zip(["CompanyCode", "FlowAccount", "BSSourceAccount"], 3*["str"])))
-df_mje = pd.read_csv(path_adaptive_mje, parse_dates=["dataPeriod"])
+df_mje = pd.read_csv(path_adaptive_mje, dtype={"Partner": "str", "LevelName": "str"}, parse_dates=["dataPeriod"])
 
 
 df_flags = pd.read_excel(path_flags, sheet_name="Sheet2")
@@ -33,7 +33,6 @@ print(df_0LIA01.shape)
 df_0LIA01.rename(columns={"Platform_Cube_x": "Scope", "Platform_Cube_y": "Scope_T1"}, inplace=True)
 df_0LIA01.drop(["Lavel Name", "Company"], axis=1, inplace=True)
 filename="BP2025_0LIA01.csv"
-breakpoint()
 delete_and_save(df_0LIA01, output_path, filename)
 
 print("Generating 1LIA05...")
@@ -55,6 +54,10 @@ delete_and_save(df_2ELI10, output_path, filename)
 
 print("Generating 1IFRS000...")
 df_1IFRS000 = transform_adaptive_out(df_mje, "2020-04-01", "1IFRS000")
+df_1IFRS000 = df_1IFRS000.merge(df_levels[["Lavel Name", "Platform_Cube"]], how="left", left_on="LevelName", right_on="Lavel Name")
+df_1IFRS000 = df_1IFRS000.merge(df_levels[["Company", "Platform_Cube"]].drop_duplicates(subset=['Company']).reset_index(drop=True), how="left", left_on="Partner", right_on="Company")
+df_1IFRS000.rename(columns={"Platform_Cube_x": "Scope", "Platform_Cube_y": "Scope_T1"}, inplace=True)
+df_1IFRS000.drop(["Lavel Name", "Company"], axis=1, inplace=True)
 filename="BP2025_1IFRS000.csv"
 delete_and_save(df_1IFRS000, output_path, filename)
 
