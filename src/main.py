@@ -22,7 +22,7 @@ df_partner_flag = pd.read_excel(path_flags, sheet_name="Sheet1")
 print("Generating 0LIA01...")
 df_0LIA01 = transform_adaptive_out(df_adaptive_0, "2020-04-01", "0LIA01")
 
-df_levels = pd.read_excel(path_levels, sheet_name="Accounts", skiprows=3, dtype={"Lavel Name": "str"})
+df_levels = pd.read_excel(path_levels, sheet_name="Accounts", skiprows=3, dtype={"Lavel Name": "str"}, keep_default_na=False)
 print(df_0LIA01.shape)
 df_0LIA01 = df_0LIA01.merge(df_levels[["Lavel Name", "Platform_Cube"]], how="left", left_on="LevelName", right_on="Lavel Name")
 
