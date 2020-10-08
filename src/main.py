@@ -12,8 +12,8 @@ output_path = read_path(input_all_paths, "output_path")
 print(output_path)
 
 print("Constructing dataframes...")
-df_adaptive_0 = pd.read_csv(path_adaptive_out, delimiter=";", encoding="cp1252", parse_dates=["dataPeriod"], dtype=dict(zip(["CompanyCode", "FlowAccount", "BSSourceAccount"], 3*["str"])))
-df_mje = pd.read_csv(path_adaptive_mje, delimiter=";", encoding="cp1252", parse_dates=["dataPeriod"])
+df_adaptive_0 = pd.read_csv(path_adaptive_out, parse_dates=["dataPeriod"], dtype=dict(zip(["CompanyCode", "FlowAccount", "BSSourceAccount"], 3*["str"])))
+df_mje = pd.read_csv(path_adaptive_mje, parse_dates=["dataPeriod"])
 
 
 df_flags = pd.read_excel(path_flags, sheet_name="Sheet2")
